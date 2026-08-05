@@ -32,7 +32,7 @@ jobs:
           output-file: source.sbom.json
           upload-artifact: true
       - name: Scan infrastructure
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: config
           scan-ref: infra
