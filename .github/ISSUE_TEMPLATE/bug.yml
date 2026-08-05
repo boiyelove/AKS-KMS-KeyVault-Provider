@@ -1,0 +1,19 @@
+name: Bug report
+description: Report a reproducible defect using synthetic data
+title: "bug: "
+labels: [bug]
+body:
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Include sanitized input and exact validation output.
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety checks
+      options:
+        - label: I removed credentials, tenant data, and personal information.
+          required: true

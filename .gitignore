@@ -1,0 +1,11 @@
+goal.md
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+coverage/
+build/
+dist/
+.env
+*.pem
+*.key
