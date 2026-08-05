@@ -13,7 +13,7 @@ class RepositoryTests(unittest.TestCase):
         policy = json.loads((ROOT / "config/policy.json").read_text())
         readme = (ROOT / "README.md").read_text()
         self.assertIn(policy["project"], readme)
-        self.assertNotIn("Portfolio rank:", readme)
+        self.assertIn("## Problem statement", readme)
 
     def test_iac_defaults_to_no_deployment(self):
         bicep = (ROOT / "infra/main.bicep").read_text()

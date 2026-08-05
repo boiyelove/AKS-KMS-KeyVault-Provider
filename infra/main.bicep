@@ -1,23 +1,31 @@
+// AKS-KMS-KeyVault-Provider infrastructure template.
+// Resource behavior stays in this file; deployment-time values are supplied by ./main.bicepparam.
+
 targetScope = 'resourceGroup'
+
+// Deployment inputs: values are explicit, reviewable, and environment-specific.
 
 @description('Safe default: create no chargeable Azure resources until explicitly enabled.')
 param deployPlatform bool = false
-param location string = resourceGroup().location
+param location string
 @minLength(3)
 @maxLength(12)
-param namePrefix string = 'mvpref'
+param namePrefix string
 
+// Derived configuration: constructs deterministic names, IDs, and policy values.
 var suffix = uniqueString(resourceGroup().id)
 var identityName = '${namePrefix}-id-${suffix}'
 var workspaceName = '${namePrefix}-log-${suffix}'
 var storageName = take(toLower(replace('${namePrefix}${suffix}', '-', '')), 24)
 
+// Resource identity: declares Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31 and its security settings.
 resource identity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = if (deployPlatform) {
   name: identityName
   location: location
   tags: { purpose: 'reference-evidence' }
 }
 
+// Resource workspace: declares Microsoft.OperationalInsights/workspaces@2023-09-01 and its security settings.
 resource workspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = if (deployPlatform) {
   name: workspaceName
   location: location
@@ -29,6 +37,7 @@ resource workspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = if (d
   }
 }
 
+// Resource evidence: declares Microsoft.Storage/storageAccounts@2023-05-01 and its security settings.
 resource evidence 'Microsoft.Storage/storageAccounts@2023-05-01' = if (deployPlatform) {
   name: storageName
   location: location
@@ -49,6 +58,7 @@ resource evidence 'Microsoft.Storage/storageAccounts@2023-05-01' = if (deployPla
   }
 }
 
+// Deployment outputs: expose identifiers needed by operators and downstream automation.
 output managedIdentityResourceId string = deployPlatform ? identity.id : ''
 output evidenceStorageResourceId string = deployPlatform ? evidence.id : ''
 output logWorkspaceResourceId string = deployPlatform ? workspace.id : ''
