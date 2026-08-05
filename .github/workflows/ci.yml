@@ -1,0 +1,44 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: azure/setup-bicep@v2
+        with:
+          version: v0.31.92
+      - name: Run repository gates
+        run: ./scripts/validate.sh
+      - name: Generate source SBOM
+        uses: anchore/sbom-action@v0.17.2
+        with:
+          path: .
+          format: cyclonedx-json
+          output-file: source.sbom.json
+          upload-artifact: true
+      - name: Scan infrastructure
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: config
+          scan-ref: infra
+          severity: HIGH,CRITICAL
+          exit-code: '1'
+      - name: Scan secrets
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

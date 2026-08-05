@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "1.0",
+  "project": "AKS-KMS-KeyVault-Provider",
+  "rank": 17,
+  "action": "plan_aks_kms_keyvault_provider",
+  "allowedCredentialModes": [
+    "managed_identity",
+    "workload_identity"
+  ],
+  "protectedTargets": [
+    "production",
+    "break-glass"
+  ],
+  "allowedTenantIds": [
+    "tenant-a"
+  ]
+}
